@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product; // 1.impor dulu model Product
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 
-class Controller extends Controller
+class ProductController extends Controller // 2.ubah class controller jadi class ProductControler
 {
     /**
      * Display a listing of the resource.
      */
     public function index() : View
     {
-        return view('index', [
+        return view('products.index', [
             'products' => Product::latest()->paginate(3)
         ]);
     }
@@ -32,18 +33,18 @@ class Controller extends Controller
      */
     public function store(StoreProductRequest $request) : RedirectResponse
     {
-        Product::create($request->all());
-        return redirect()->route('index')
+        Product::create($request->validated()); // 3.dari all() gunakan validated() untuk mendapatkan data yang telah divalidasi
+        return redirect()->route('products.index')
                 ->withSuccess('New product is added successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product) : View
+    public function show(Product $product) : View 
     {
         return view('products.show', [
-            'product' => $products
+            'product' => $product //4.Ubah ==> $products jadi $product
         ]);
     }
 
@@ -53,7 +54,7 @@ class Controller extends Controller
     public function edit(Product $product) : View
     {
         return view('products.edit', [
-            'products' => $product
+            'product' => $product // 5.perbaiki penamaan variabel $products jadi $product
         ]);
     }
 
@@ -70,7 +71,7 @@ class Controller extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product) : RedirectResponse
+    public function destroy(Product $product) : RedirectResponse//6. Setelah Product tambahi $product
     {
         $product->delete();
         return redirect()->route('index')
